@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>新增演出</title>
+</head>
+<body>
+<form method="post" enctype="multipart/form-data">
+        {{ form.csrf_token }}
+        <!--获取到文本的标签-->
+        {{ form.showName.label }}
+        <!--表示文本输入框-->
+        {{ form.showName }} <br>
+        <!-- 获取form表单中的所有的错误信息-->
+        {% for msg in form.showName.errors %}
+            <span style="color: red;">{{ msg }}</span>
+        {% endfor %}
+
+        {{ form.showPic.label }}
+        {{ form.showPic }} <br>
+        {% for msg in form.showPic.errors %}
+            <span style="color: red;">{{ msg }}</span>
+        {% endfor %}
+
+        {{ form.descriptionFile.label }}
+        <!--表示文本输入框-->
+        {{ form.descriptionFile }} <br>
+        <!-- 获取form表单中的所有的错误信息-->
+        {% for msg in form.descriptionFile.errors %}
+            <span style="color: red;">{{ msg }}</span>
+        {% endfor %}
+
+        {{ form.producer.label }}
+        {{ form.producer }} <br>
+        {% for msg in form.producer.errors %}
+            <span style="color: red;">{{ msg }}</span>
+        {% endfor %}
+
+        {{ form.stadiumId.label }}
+        {{ form.stadiumId }} <br>
+        {% for msg in form.stadiumId.errors %}
+            <span style="color: red;">{{ msg }}</span>
+        {% endfor %}
+
+        {{ form.canChooseSeats.label }}
+        {{ form.canChooseSeats }} <br>
+        {% for msg in form.canChooseSeats.errors %}
+            <span style="color: red;">{{ msg }}</span>
+        {% endfor %}
+
+        {{ form.submit }}
+
+    </form>
+</body>
+</html>

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{%block title%}{%endblock%}</title>
+
+    <!--一引入js文件-->
+    {%block scriptFront%}
+        <script src="{{bootstrap_find_resource('jquery.js', cdn='jquery')}}"></script>
+        <script src="{{bootstrap_find_resource('js/bootstrap.js', cdn='bootstrap')}}"></script>
+    {% endblock %}
+    <!--一引入css文件-->
+    {%block style%}
+        <link href="{{bootstrap_find_resource('css/bootstrap.css', cdn='bootstrap')}}" rel="stylesheet">
+	    <link rel="stylesheet" href="{{url_for('static',filename='vendor/font-awesome/css/font-awesome.min.css')}}">
+	    <link rel="stylesheet" href="{{url_for('static',filename='vendor/linearicons/style.css')}}">
+        <link rel="stylesheet" href="{{url_for('static',filename='css/style.css')}}">
+    {%endblock%}
+</head>
+<body>
+<div id="wrapper">
+    {% block navbar %}
+        <nav class="navbar navbar-default navbar-fixed-top" style="height: 60px;">
+			<div class="brand">
+                <span class="font-size-20">SHARING票务（管理员端）</span>
+			</div>
+			<div class="container-fluid">
+				<div class="navbar-btn">
+					<button type="button" class="btn-toggle-fullwidth"><i class="lnr lnr-arrow-left-circle"></i></button>
+				</div>
+				<div id="navbar-menu">
+					<ul class="nav navbar-nav navbar-right">
+
+						<li class="dropdown">
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                <i class="lnr lnr-question-circle"></i> <span>Help</span> <i class="icon-submenu lnr lnr-chevron-down"></i>
+                            </a>
+							<ul class="dropdown-menu">
+								<li><a href="#">Basic Use</a></li>
+								<li><a href="#">Working With Data</a></li>
+								<li><a href="#">Security</a></li>
+								<li><a href="#">Troubleshooting</a></li>
+							</ul>
+						</li>
+						<li class="dropdown">
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                <img src="{{url_for('static',filename='adminIMG/user.png')}}" class="img-circle" alt="Avatar">
+                                <span>Samuel</span> <i class="icon-submenu lnr lnr-chevron-down"></i>
+                            </a>
+							<ul class="dropdown-menu">
+								<li><a href="#"><i class="lnr lnr-user"></i> <span>My Profile</span></a></li>
+								<li><a href="#"><i class="lnr lnr-envelope"></i> <span>Message</span></a></li>
+								<li><a href="#"><i class="lnr lnr-cog"></i> <span>Settings</span></a></li>
+								<li><a href="#"><i class="lnr lnr-exit"></i> <span>Logout</span></a></li>
+							</ul>
+						</li>
+
+					</ul>
+				</div>
+			</div>
+		</nav>
+    {% endblock %}
+
+        <div id="sidebar-nav" class="sidebar">
+			<div class="sidebar-scroll">
+				<nav>
+					<ul class="nav">
+                        {% block slidebar %}
+						<li><a href="#" class="active"><i class="lnr lnr-home"></i> <span>演出管理</span></a></li>
+						<li><a href="#" class=""><i class="lnr lnr-code"></i> <span>场馆管理</span></a></li>
+						<li><a href="#" class=""><i class="lnr lnr-chart-bars"></i> <span>艺人管理</span></a></li>
+                        {% endblock %}
+{#						<li>#}
+{#							<a href="#subPages" data-toggle="collapse" class="collapsed">#}
+{#                                <i class="lnr lnr-file-empty"></i> <span>Pages</span> <i class="icon-submenu lnr lnr-chevron-left"></i>#}
+{#                            </a>#}
+{#							<div id="subPages" class="collapse ">#}
+{#								<ul class="nav">#}
+{#									<li><a href="#" class="">Profile</a></li>#}
+{#									<li><a href="#" class="">Login</a></li>#}
+{#									<li><a href="#" class="">Lockscreen</a></li>#}
+{#								</ul>#}
+{#							</div>#}
+{#						</li>#}
+
+					</ul>
+				</nav>
+			</div>
+        </div>
+
+        <div class="main">
+        <!-- MAIN CONTENT -->
+        <div class="main-content">
+            <div class="container-fluid">
+                <!-- OVERVIEW -->
+                <div class="panel panel-headline">
+                    <div class="panel-heading" style="padding-bottom: 0;">
+                        <h3 class="panel-title">
+                            {% block contentTitle %}{% endblock %}
+                        </h3>
+                        <p class="panel-subtitle">
+                            {% block contentDescription %}{% endblock %}
+                        </p>
+                    </div>
+                    <div class="panel-body">
+                        <div class="row">
+                        {% block content %}
+
+                        {% endblock %}
+                        </div>
+                    </div>
+                </div>
+                <!-- END OVERVIEW -->
+
+            </div>
+        </div>
+        <!-- END MAIN CONTENT -->
+    </div>
+ </div>
+    {% block scriptEnd %}
+        <script src="{{url_for('static',filename='vendor/jquery-slimscroll/jquery.slimscroll.min.js')}}"></script>
+        <script src="{{url_for('static',filename='js/klorofil-common.js')}}"></script>
+    {% endblock scriptEnd %}
+
+</body>
+</html>

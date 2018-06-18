@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>新增艺人</title>
+</head>
+<body>
+<h1>艺人信息</h1>
+
+<form method="post" enctype="multipart/form-data">
+        {{ form.csrf_token }}
+        <!--获取到文本的标签-->
+        {{ form.artist_name.label }}
+        {{ form.artist_name }} <br>
+        {% for error in form.artist_name.errors %}
+            <span style="color: red;">{{ error }}</span>
+        {% endfor %}
+
+        {{ form.artist_pic.label }}
+        {{ form.artist_pic }} <br>
+        {% for error in form.artist_pic.errors %}
+            <span style="color: red;">{{ error }}</span>
+        {% endfor %}
+
+        {{ form.submit }}
+    </form>
+</body>
+</html>

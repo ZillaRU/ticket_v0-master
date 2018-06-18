@@ -1,0 +1,174 @@
+{%extends 'admin/base.html'%}
+<!--网页head-->
+{%block title%}演出管理{%endblock%}
+
+{% block style %}
+    {{ super() }}
+{% endblock %}
+
+{%block scriptFront%}
+    {{ super() }}
+{% endblock %}
+<!--//-->
+
+<!--网页正文-->
+{% block navbar %}
+    {{ super() }}
+{% endblock %}
+
+{% block slidebar %}
+    {{ super() }}
+{% endblock %}
+
+{% block contentTitle %}演出管理{% endblock %}
+{% block contentDescription %}新增修改删除查询演出，一键随心订~{% endblock %}
+{% block content %}
+    <br/>
+    {{ message }}
+    <table class="table table-bordered" id='shows_table'>
+        <tr>
+            <th>id</th>
+            <th>名称</th>
+            <th>海报</th>
+            <th>制作商</th>
+            <th>场馆</th>
+            <th>可选座</th>
+            <th>描述</th>
+            <th>操作</th>
+            <th>演出场次</th>
+        </tr>
+     </table>
+    <p><a class="btn btn-primary" href="{{ url_for('admin.add_show',city='上海') }}">新增演出</a></p>
+    <!-- 模态框（Modal） -->
+    <div class="modal fade" id="editModel" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+         <div class="modal-dialog">
+             <div class="modal-content">
+                 <div class="modal-header">
+                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                         &times;
+                     </button>
+                     <h4 class="modal-title" id="myModalLabel">
+                         编辑演出
+                     </h4>
+                 </div>
+                 <form method="post" enctype="multipart/form-data">
+                     <div class="modal-body">
+                     {{ form.csrf_token }}
+                     <!--获取到文本的标签-->
+                     {{ form.showId.label }}
+                     {{ form.showId(readonly=true) }}
+                        <br/><br/>
+                     {{ form.showName.label }}
+                     <!--表示文本输入框-->
+                     {{ form.showName }} <br>
+                     <!-- 获取form表单中的所有的错误信息-->
+                     {% for msg in form.showName.errors %}
+                         <span style="color: red;">{{ msg }}</span>
+                     {% endfor %}
+
+                     {{ form.showPic.label }}
+                     {{ form.showPic }} <br>
+                     {% for msg in form.showPic.errors %}
+                         <span style="color: red;">{{ msg }}</span>
+                     {% endfor %}
+
+                     {{ form.descriptionFile.label }}
+                     <!--表示文本输入框-->
+                     {{ form.descriptionFile }} <br>
+                     <!-- 获取form表单中的所有的错误信息-->
+                     {% for msg in form.descriptionFile.errors %}
+                         <span style="color: red;">{{ msg }}</span>
+                     {% endfor %}
+
+                     {{ form.producer.label }}
+                     {{ form.producer }} <br>
+                     {% for msg in form.producer.errors %}
+                         <span style="color: red;">{{ msg }}</span>
+                     {% endfor %}
+
+                     {{ form.stadiumId.label }}
+                     {{ form.stadiumId }} <br>
+                     {% for msg in form.stadiumId.errors %}
+                         <span style="color: red;">{{ msg }}</span>
+                     {% endfor %}
+                     <br/>
+                     {{ form.canChooseSeats.label }}
+                     {{ form.canChooseSeats }} <br>
+                     {% for msg in form.canChooseSeats.errors %}
+                         <span style="color: red;">{{ msg }}</span>
+                     {% endfor %}
+                     <br/>
+
+                     </div>
+                     <div class="modal-footer">
+                         <button type="button" class="btn btn-default" data-dismiss="modal">关闭
+                         </button>
+                         <button type="submit" class="btn btn-primary">
+                             提交更改
+                         </button>
+                     </div>
+                 </form>
+             </div>
+         </div>
+    </div>
+{% endblock %}
+{% block scriptEnd %}
+    {{ super() }}
+    <script>
+        function Values(ID,name,pic_src,desc,sta_id,seats_or_not,pd) {
+            {#alert('hhhhh');#}
+            $("#showId").val(ID);
+            $("#showName").val(name);
+            $("#showPic").val(pic_src);
+            $("#description_file").val(desc);
+            $("#stadium_id").val(sta_id);
+            $("#can_choose_seats").val(seats_or_not);
+            $("#producer").val(pd);
+        }
+        $(function(){
+            $.ajax(
+                {
+                    url:'{{url_for('admin.get_shows')}}',
+                    type:'get',
+                    dataType:'json',
+                    success:function (res) {
+                        if(res['ret']==='FAILURE'){
+                            alert('请求失败！');
+                            return;
+                        }
+                        if(res['data']['shows_status']==='no shows') {
+                            $('h1').append('<b> 无演出 </b>')
+                        }
+                        showsData=res['data']['shows_list'];
+                        let shows_table=$('#shows_table');
+                        $.each(showsData, function (i, item) {
+                            let tr,yes_no,img_src,file;
+                            if(item[2]===null)
+                                img_src='暂无';
+                            else
+                                img_src='<img src="../../../static/showImgs/'+item[2]+'" height="80" width="80">';
+                            if(item[3]===null)
+                                file='暂无';
+                            else file=item[3];
+                            if(item[5]===true)
+                                yes_no='是';
+                            else
+                                yes_no='否';
+
+                            tr='<td>'+item[0]+'</td>'+'<td>'+item[1]+'</td>'+'<td>'+img_src+ '</td>'+
+                                '<td>'+file+'</td>'+'<td>'+item[4]+'</td>'+'<td>'+yes_no+'</td>'+'<td>'+item[6]+'</td>'+
+                                "<td><button class=\"btn btn-primary\" data-toggle=\"modal\" data-target=\"#editModel\" onclick='Values(&#39;"
+                                +item[0]+"&#39;,&#39;"+item[1]+"&#39;,&#39;"+item[2]+"&#39;,&#39;"+item[3]+"&#39;,&#39;"+item[4]+"&#39;,&#39;"+item[5]+"&#39;,&#39;"+item[6]+"&#39;)\'>编辑</button></td>"
+                            +'<td><a href=\"/admin/viewSessions?show_id='+item[0]+'\">查看场次</a>' +
+                            '<a href=\"/admin/deleteShow?show_id='+item[0]+'\">删除</a></td>';
+                            shows_table.append('<tr>'+tr+'</tr>');
+                        });
+                    }
+                }
+            )
+        }
+        );
+
+    </script>
+{% endblock scriptEnd %}
+<!--//-->

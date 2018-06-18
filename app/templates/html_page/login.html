@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>--Log in--</title>
+</head>
+<body>
+<h1>登录</h1>
+
+<form method="post" enctype="multipart/form-data">
+    {{ form.hidden_tag() }}
+    {{ form.username.label }}
+    {{ form.username}}
+        {% for msg in form.username.errors %}
+            <span style="color: red;">{{ msg }}</span>
+        {% endfor %}
+    {{ form.password.label }}
+    {{ form.password}}
+        {% for msg in form.password.errors %}
+            <span style="color: red;">{{ msg }}</span>
+        {% endfor %}
+    {{ form.submit.label }}
+    {{ form.submit}}
+</form>
+<div class="container">
+    {% for message in get_flashed_messages() %}
+    <div class="alert alert-warning">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        {{ message }}
+    </div>
+    {% endfor %}
+    {% block page_content %}{% endblock %}
+</div>
+</body>
+</html>

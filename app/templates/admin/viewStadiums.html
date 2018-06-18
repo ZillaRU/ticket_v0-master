@@ -1,0 +1,164 @@
+{%extends 'admin/base.html'%}
+<!--网页head-->
+{%block title%}场馆管理{%endblock%}
+
+{% block style %}
+    {{ super() }}
+{% endblock %}
+
+{%block scriptFront%}
+    {{ super() }}
+{% endblock %}
+<!--//-->
+
+<!--网页正文-->
+
+{% block navbar %}
+    {{ super() }}
+{% endblock %}
+
+{% block slidebar %}
+    {{ super() }}
+{% endblock %}
+{% block contentTitle %}场馆管理{% endblock %}
+{% block contentDescription %}设置不同的区域选座，价格由你而定~{% endblock %}
+
+{%block content%}
+    <h3 class="text-center">场馆列表</h3>
+    {{ message }}
+    <table class="table table-bordered" id='stadiums_table'>
+        <tr>
+            <th>id</th>
+            <th>场馆名称</th>
+            <th>所在城市</th>
+            <th>地址</th>
+            <th>有无座位</th>
+            <th>场馆示意图</th>
+            <th>操作</th>
+            <th>划分区域</th>
+        </tr>
+     </table>
+    <p><a class="btn btn-primary" href="{{ url_for('admin.add_stadium') }}">新增场馆</a></p>
+
+    <!-- 模态框（Modal） -->
+    <div class="modal fade" id="editModel" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog" style="-webkit-transform: none; transform: none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                        &times;
+                    </button>
+                    <h4 class="modal-title" id="myModalLabel">
+                        编辑场馆
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <form method="post" enctype="multipart/form-data">
+                        {{ form.csrf_token }}
+                        <!--获取到文本的标签-->
+    {#                    <label for="stadiumId">场馆id</label><br>#}
+    {#                    <input type='text' id='stadiumId' name='stadiumId' value='' readonly><br>#}
+                        {{ form.stadiumId.label }}
+                        <!--表示文本输入框-->
+                        {{ form.stadiumId(readonly=true) }} <br>
+                        {{ form.stadiumName.label }}
+                        <!--表示文本输入框-->
+                        {{ form.stadiumName }} <br>
+                        <!-- 获取form表单中的所有的错误信息-->
+                        {% for error in form.stadiumName.errors %}
+                            <span style="color: red;">{{ error }}</span>
+                        {% endfor %}
+
+                        {{ form.city.label }}
+                        {{ form.city }} <br>
+                        {% for error in form.city.errors %}
+                            <span style="color: red;">{{ error }}</span>
+                        {% endfor %}
+
+                        {{ form.address.label }}
+                        {{ form.address }} <br>
+                        {% for error in form.address.errors %}
+                            <span style="color: red;">{{ error }}</span>
+                        {% endfor %}
+
+                        {{ form.hasSeats.label }}
+                        {{ form.hasSeats }} <br>
+                        {% for error in form.hasSeats.errors %}
+                            <span style="color: red;">{{ error }}</span>
+                        {% endfor %}
+                        <br>
+                        {{ form.picSrc.label }}
+                        {{ form.picSrc }} <br>
+                        {% for error in form.picSrc.errors %}
+                            <span style="color: red;">{{ error }}</span>
+                            {% endfor %}
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        提交更改
+                    </button>
+                </div>
+                    </form>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal -->
+    </div>
+
+{% endblock %}
+{% block scriptEnd %}
+    {{ super() }}
+    <script>
+        function Values(ID,name,city,addr,has_seats,pic_src) {
+            {#alert('hhhhh');#}
+            $("#stadiumId").val(ID);
+            $("#stadiumName").val(name);
+            $("#city").val(city);
+            $("#address").val(addr);
+            $("#hasSeats").val(has_seats);
+            $("#picSrc").val(pic_src);
+        }
+        $(function(){
+            $.ajax(
+                {
+                    url:'{{url_for('admin.get_stadiums')}}',
+                    type:'get',
+                    dataType:'json',
+                    success:function (res) {
+                        if(res['ret']==='FAILURE'){
+                            alert('请求失败！');
+                            return;
+                        }
+                        if(res['data']['stadium_status']==='no stadium') {
+                            $('h1').append('<b> 无场馆 </b>')
+                        }
+                        stadiumData=res['data']['stadium_list'];
+                        let stadiums_table=$('#stadiums_table');
+                        $.each(stadiumData, function (i, item) {
+                            let tr,yes_no,img_src;
+                            if(item[4]===true)
+                                yes_no='有';
+                            else
+                                yes_no='无';
+                            if(item[5]===null)
+                                img_src='暂无';
+                            else
+                                img_src='<img src="../../../static/stadiumImgs/'+item[5]+'" height="80" width="80">';
+
+                            tr='<td>'+item[0]+'</td>'+'<td>'+item[1]+'</td>'+'<td>'+item[2]+ '</td>'+
+                                '<td>'+item[3]+'</td>'+'<td>'+yes_no+'</td>'+'<td>'+img_src+'</td>'+
+                                "<td><button class=\"btn btn-primary\" data-toggle=\"modal\" data-target=\"#editModel\" onclick='Values(&#39;"
+                                +item[0]+"&#39;,&#39;"+item[1]+"&#39;,&#39;"+item[2]+"&#39;,&#39;"+item[3]+"&#39;,&#39;"+item[4]+"&#39;,&#39;"+item[5] +"&#39;)\'>编辑</button>"+
+                            '<a href=\"/admin/deleteStadium?stadium_id='+item[0]+'\">删除</a></td>'+
+                                "<td><a href=\"/admin/viewAreas?stadium_id="+item[0]+"\">查看区域</a></td>";
+                            stadiums_table.append('<tr>'+tr+'</tr>');
+                        });
+                    }
+                }
+            )
+        }
+        );
+
+    </script>
+{% endblock scriptEnd %}

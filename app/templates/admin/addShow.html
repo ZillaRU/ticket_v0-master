@@ -1,0 +1,79 @@
+{%extends 'admin/base.html'%}
+<!--网页head-->
+{%block title%}新增演出{%endblock%}
+{% block style %}
+    {{ super() }}
+{% endblock %}
+
+{%block scriptFront%}
+    {{ super() }}
+{% endblock %}
+<!--//-->
+
+<!--网页正文-->
+
+{% block navbar %}
+    {{ super() }}
+{% endblock %}
+
+{% block slidebar %}
+    {{ super() }}
+{% endblock %}
+{% block contentTitle %}演出管理{% endblock %}
+{% block contentDescription %}新增修改删除查询演出，一键随心订~{% endblock %}
+
+{%block content%}
+<h4 class="text-center">新增一个演出</h4>
+<!--正文内容-->
+<form method="post" enctype="multipart/form-data">
+    {{ form.csrf_token }}
+    <!--获取到文本的标签-->
+    {{ form.showName.label }}
+    <!--表示文本输入框-->
+    {{ form.showName }} <br>
+    <!-- 获取form表单中的所有的错误信息-->
+    {% for msg in form.showName.errors %}
+        <span style="color: red;">{{ msg }}</span>
+    {% endfor %}
+
+    {{ form.showPic.label }}
+    {{ form.showPic }} <br>
+    {% for msg in form.showPic.errors %}
+        <span style="color: red;">{{ msg }}</span>
+    {% endfor %}
+
+    {{ form.descriptionFile.label }}
+    <!--表示文本输入框-->
+    {{ form.descriptionFile }} <br>
+    <!-- 获取form表单中的所有的错误信息-->
+    {% for msg in form.descriptionFile.errors %}
+        <span style="color: red;">{{ msg }}</span>
+    {% endfor %}
+
+    {{ form.producer.label }}
+    {{ form.producer }} <br>
+    {% for msg in form.producer.errors %}
+        <span style="color: red;">{{ msg }}</span>
+    {% endfor %}
+
+    {{ form.stadiumId.label }}
+    {{ form.stadiumId }} <br>
+    {% for msg in form.stadiumId.errors %}
+        <span style="color: red;">{{ msg }}</span>
+    {% endfor %}
+    <br/>
+
+    {{ form.canChooseSeats.label }}
+    {{ form.canChooseSeats }} <br>
+    {% for msg in form.canChooseSeats.errors %}
+        <span style="color: red;">{{ msg }}</span>
+    {% endfor %}
+    <br/>
+    <div class="flex-right">
+        {{ form.submit }}
+    </div>
+</form>
+{% endblock %}
+{% block scriptEnd %}
+    {{ super() }}
+{% endblock scriptEnd %}

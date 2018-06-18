@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>新增场馆</title>
+</head>
+<body>
+<h1>场馆信息</h1>
+
+<form method="post" enctype="multipart/form-data">
+        {{ form.csrf_token }}
+        <!--获取到文本的标签-->
+        {{ form.stadiumName.label }}
+        <!--表示文本输入框-->
+        {{ form.stadiumName }} <br>
+        <!-- 获取form表单中的所有的错误信息-->
+        {% for error in form.stadiumName.errors %}
+            <span style="color: red;">{{ error }}</span>
+        {% endfor %}
+
+        {{ form.city.label }}
+        {{ form.city }} <br>
+        {% for error in form.city.errors %}
+            <span style="color: red;">{{ error }}</span>
+        {% endfor %}
+
+        {{ form.address.label }}
+        {{ form.address }} <br>
+        {% for error in form.address.errors %}
+            <span style="color: red;">{{ error }}</span>
+        {% endfor %}
+
+        {{ form.hasSeats.label }}
+        {{ form.hasSeats }} <br>
+        {% for error in form.hasSeats.errors %}
+            <span style="color: red;">{{ error }}</span>
+        {% endfor %}
+
+        {{ form.picSrc.label }}
+        {{ form.picSrc }} <br>
+        {% for error in form.picSrc.errors %}
+            <span style="color: red;">{{ error }}</span>
+        {% endfor %}
+
+        {{ form.submit }}
+    </form>
+</body>
+</html>

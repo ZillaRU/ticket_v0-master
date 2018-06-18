@@ -1,0 +1,69 @@
+{%extends 'admin/base.html'%}
+<!--网页head-->
+{%block title%}新增场馆{%endblock%}
+
+{% block style %}
+    {{ super() }}
+{% endblock %}
+
+{%block scriptFront%}
+    {{ super() }}
+{% endblock %}
+<!--//-->
+
+<!--网页正文-->
+
+{% block navbar %}
+    {{ super() }}
+{% endblock %}
+
+{% block slidebar %}
+    {{ super() }}
+{% endblock %}
+{% block contentTitle %}场馆管理{% endblock %}
+{% block contentDescription %}设置不同的区域选座，价格由你而定~{% endblock %}
+
+{%block content%}
+    <h4 class="text-center">新增一个场馆信息</h4>
+    <form method="post" enctype="multipart/form-data">
+        {{ form.csrf_token }}
+        <!--获取到文本的标签-->
+        {{ form.stadiumName.label }}
+        <!--表示文本输入框-->
+        {{ form.stadiumName }} <br>
+        <!-- 获取form表单中的所有的错误信息-->
+        {% for error in form.stadiumName.errors %}
+            <span style="color: red;">{{ error }}</span>
+        {% endfor %}
+
+        {{ form.city.label }}
+        {{ form.city }} <br>
+        {% for error in form.city.errors %}
+            <span style="color: red;">{{ error }}</span>
+        {% endfor %}
+
+        {{ form.address.label }}
+        {{ form.address }} <br>
+        {% for error in form.address.errors %}
+            <span style="color: red;">{{ error }}</span>
+        {% endfor %}
+
+        {{ form.hasSeats.label }}
+        {{ form.hasSeats }} <br>
+        {% for error in form.hasSeats.errors %}
+            <span style="color: red;">{{ error }}</span>
+        {% endfor %}
+        <br>
+
+        {{ form.picSrc.label }}
+        {{ form.picSrc }} <br>
+        {% for error in form.picSrc.errors %}
+            <span style="color: red;">{{ error }}</span>
+        {% endfor %}
+
+        {{ form.submit }}
+    </form>
+{% endblock %}
+{% block scriptEnd %}
+    {{ super() }}
+{% endblock scriptEnd %}

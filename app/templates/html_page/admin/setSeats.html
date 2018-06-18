@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>setSeats</title>
+    <script src="../../../static/js/jquery-3.3.1.min.js"></script>
+    <script src="../../../static/js/jquery.seat-charts.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="../../../static/css/seatStyle.css"/>
+</head>
+<body>
+
+<script>
+    let stadiumData = null;
+    let areaData = null;
+
+    function stadiumChanged(sid) {
+        $.ajax(
+            {
+                url: '/getArea',
+                type: 'get',
+                data: {
+                    stadiumId: sid
+                },
+                dataType: 'json',
+                success: function (res) {
+                    if (res['ret'] === 'FAILURE') {
+                        alert('请求失败！');
+                        return;
+                    }
+                    areaData = res['data'];
+                    let areas = $('#areas');
+                    areas.children().remove();
+                    $.each(areaData, function (i, item) {
+                        areas.append('<option>' + item[1] + '</option>');
+                    });
+                }
+            }
+        );
+    }
+
+    $(document).ready(function () {
+        $.ajax(
+            {
+                url: '/getStadium',
+                type: 'get',
+                dataType: 'json',
+                success: function (res) {
+                    if (res['ret'] === 'FAILURE') {
+                        alert('请求失败！');
+                        return;
+                    }
+                    stadiumData = res['data'];
+                    let stadiums = $('#stadiums');
+                    $.each(stadiumData, function (i, item) {
+                        stadiums.append('<option>' + item[1] + '</option>');
+                    });
+                    let curStadiumIndex = getSelectedStadiumIndex();
+                    if (curStadiumIndex >= 0) {
+                        stadiumChanged(stadiumData[0][0]);
+                    }
+                }
+            }
+        );
+
+    });
+
+</script>
+
+<div id="set-seat-nav">
+    <!--设置【{{ stadiumName }}】的【{{ areaName }}】-->
+    <p>选择场馆：
+        <select id="stadiums" name="sname"></select>
+    </p>
+    <p>选择区域：
+        <select id="areas" name="aname"></select>
+    </p>
+</div>
+
+<div id="before-set">
+    <button type="button" onclick="getSeatMap()">开始设置座位</button>
+    <!--<button type="button" onclick="getSelectedAreaIndex()">当前area下标</button>-->
+</div>
+
+<div id="change-size" style="display: none">
+    <p>增加
+        <input id="additional-row-count" type="text"/>
+        行
+        <button type="button" onclick="addRowCount()">确定</button>
+    </p>
+    <p>增加
+        <input id="additional-col-count" type="text"/>
+        列
+        <button type="button" onclick="addColCount()">确定</button>
+    </p>
+    <p>
+        <button type="button" onclick="setStatus('selected');setSeats()">选择座位区域</button>
+        <button type="button" onclick="setStatus('available');setSeats()">反选座位区域</button>
+        <button type="button" onclick="seatsFinished()">完成座位设置</button>
+    </p>
+    <p>
+        <button type="button" onclick="setRowCol()">设置排号、座位号</button>
+        <button type="button" onclick="rowColFinished()">完成排号、座位号设置</button>
+    </p>
+</div>
+
+<div id="seat-map"></div>
+
+<div id="selectionRect"
+     style="position: absolute;background-color: rgba(137,189,189,0.5);border:1px solid rgb(137,189,189);"></div>
+
+<script>
+
+    function getSelectedStadiumIndex() {
+        let i = $('option:selected', '#stadiums').index();
+        console.log('selected stadium index: ' + i);
+        return i;
+    }
+
+    function getSelectedAreaIndex() {
+        let i = $('option:selected', '#areas').index();
+        console.log('selected area index: ' + i);
+        return i;
+    }
+
+    $('#stadiums').change(function () {
+        let i = getSelectedStadiumIndex();
+        // console.log('selected: ' + stadiumData[i][1] + ', stadiumId = ' + stadiumData[i][0]);
+        stadiumChanged(stadiumData[i][0]);
+    });
+
+    $('#areas').change(function () {
+        getSelectedAreaIndex();
+    });
+
+    //----------------------------------------------------------------
+
+    let curRows = 0;
+    let curCols = 0;
+
+    function getDefaultSeatMap(rows, cols, chr) {
+        curRows = rows;
+        curCols = cols;
+
+        let map = new Array(rows);
+        let oneRow = '';
+        for (let j = 0; j < cols; j++) {
+            oneRow += chr;
+        }
+        for (let i = 0; i < rows; i++) {
+            map[i] = oneRow;
+        }
+        return map;
+    }
+
+    function seatChartsConfig(map) {
+
+        let sc = $('#seat-map').seatCharts({
+            /*
+                        map: [
+                            'aaaaaaaaaaaa',
+                            'bbbaaaaaabbb',
+                            '_bbb_____bb_',
+                            '__cc__cc_ccc'
+                        ],*/
+            //map: getDefaultSeatMap(20, 30, 'a'),
+            map: map,
+            seats: {
+                /*
+                a: {
+                    price: 500,
+                    classes: 'defaltSeat'
+                },
+                b: {
+                    price: 300,
+                    classes: 'bbb'
+                },
+                c: {
+                    price: 100,
+                    classes: 'ccc'
+                }*/
+            },
+            click: function () {
+                console.log('click');
+                if (this.status() === 'available') {
+                    return 'selected';
+                }
+                else if (this.status() === 'selected') {
+                    return 'available';
+                }
+                else if (this.status() === 'unavailable') {
+                    return 'unavailable';
+                }
+                else {
+                    return this.style();
+                }
+            }
+
+        });
+
+        sc.get(['2_3', '1_2', '3_2', '3_3', '4_4', '4_5']).status('unavailable');
+
+        return sc;
+
+    }
+
+    // $(document).ready();
+
+
+    function getSeatMap() {
+        let curStadiumIndex = getSelectedStadiumIndex();
+        let curAreaIndex = getSelectedAreaIndex();
+
+        if (curStadiumIndex < 0 || curAreaIndex < 0) {
+            alert('请选择正确区域！');
+            return;
+        }
+
+        $.ajax({
+            url: '/getSeats',
+            type: 'get',
+            data: {
+                stadiumId: stadiumData[curStadiumIndex][0],
+                areaId: areaData[curAreaIndex][0]
+            },
+            dataType: 'json',
+            success: function (res) {
+                if (res['ret'] === 'FAILURE') {
+                    alert('请求失败！');
+                    return;
+                }
+                let data = res['data'];
+                if (data['area_status'] === 'no seat') {
+                    alert('该区域还没有设置座位，请开始设置～');
+                    $('#change-size').css('display', 'block');
+                    seatChartsConfig(getDefaultSeatMap(30, 30, 'a'));
+                } else {
+                    // alert('该区域已设置过座位。'); todo 已经设置过的怎么修改？？？感觉还是不要允许删除和修改现有座位了，要改就整个区域的座位都删掉好了。。。
+                    /* todo 没写，待完成
+                    $.each(data['seat_list'], function (i, seat) {
+
+                    });
+                    */
+                }
+            }
+        });
+
+        /*
+                let sc = seatChartsConfig(
+                    ['aaa', 'aaa', 'aaa']
+                );
+        */
+
+        // sc.get(['1_1', '5_5']).status('selected');
+    }
+
+    //----------------------------------------------------------------
+
+    function constructId(row, col) {
+        return row + '_' + col;
+    }
+
+    function addRowCount() {
+        let addRowCount = parseInt($('#additional-row-count').val());
+        let appendStr = '';
+        let i = 0;
+        for (i = curRows; i < curRows + addRowCount; i++) {
+            appendStr += '<div class="seatCharts-row">';
+            appendStr += '<div class="seatCharts-cell seatCharts-space">';
+            appendStr += (i + 1);
+            appendStr += '</div>';
+            for (let j = 0; j < curCols; j++) {
+                appendStr += '<div id="';
+                appendStr += constructId((i + 1), (j + 1));
+                appendStr += '" role="checkbox" aria-checked="false" focusable="true" tabindex="-1" class="seatCharts-seat seatCharts-cell available">';
+                appendStr += (j + 1);
+                appendStr += '</div>';
+            }
+            appendStr += '</div>';
+        }
+        $('#seat-map').append(appendStr);
+        curRows += addRowCount;
+    }
+
+    function addColCount() {
+        let addColCount = parseInt($('#additional-col-count').val());
+        let appendStr = '';
+        $('.seatCharts-row').each(function (i, item) {
+            if ($(this).hasClass('seatCharts-header')) {
+                for (let j = curCols; j < curCols + addColCount; j++) {
+                    appendStr += '<div class="seatCharts-cell">';
+                    appendStr += (j + 1);
+                    appendStr += '</div>';
+                }
+                $(this).append(appendStr);
+                appendStr = '';
+            } else {
+                for (let j = curCols; j < curCols + addColCount; j++) {
+                    appendStr += '<div id="';
+                    appendStr += constructId(i, (j + 1));
+                    appendStr += '" role="checkbox" aria-checked="false" focusable="true" tabindex="-1" class="seatCharts-seat seatCharts-cell available">';
+                    appendStr += (j + 1);
+                    appendStr += '</div>';
+                }
+                $(this).append(appendStr);
+                appendStr = '';
+            }
+        });
+        curCols += addColCount;
+    }
+
+    //----------------------------------------------------------------
+
+    let curSeatStatus = 'selected';
+    let elseSeatStatus = 'available';
+
+    function setStatus(newStatus) {
+        curSeatStatus = newStatus;
+        if (newStatus === 'selected') {
+            elseSeatStatus = 'available';
+        }
+        else {
+            elseSeatStatus = 'selected';
+        }
+    }
+
+    //----------------------------------------------------------------
+
+    let settingSeats = false;
+    let settingRowCol = false;
+
+    function setSeats() {
+        if (settingSeats === true) return;
+        settingSeats = true;
+        rowColFinished();
+    }
+
+    function seatsFinished() {
+        settingSeats = false;
+    }
+
+    function setRowCol() {
+        if (settingRowCol === true) return;
+        settingSeats = false;
+        settingRowCol = true;
+
+        // set row
+        $('.seatCharts-row').each(function () {
+            if (!$(this).hasClass('seatCharts-header')) {
+                let child = $(this).children().eq(0);
+                let a = child.html();
+                child.html('<input class="cell-input" type="text" value="' + a + '"/>');
+            }
+        });
+
+        // set col
+        $('.seatCharts-header').children('.seatCharts-cell').each(function (i) {
+            if (!(i === 0)) {
+                let a = $(this).html();
+                $(this).html('<input class="cell-input" type="text" value="' + a + '"/>');
+            }
+        });
+    }
+
+    function rowColFinished() {
+        if (settingRowCol === false) return;
+        settingRowCol = false;
+
+        // row finished
+        $('.seatCharts-row').each(function () {
+            if (!$(this).hasClass('seatCharts-header')) {
+                let child = $(this).children().eq(0);
+                let a = child.find('input').val();
+                child.html(a);
+            }
+        });
+
+        // col finished
+        $('.seatCharts-header').children('.seatCharts-cell').each(function (i) {
+            let a = $(this).find('input').val();
+            $(this).html(a);
+        });
+    }
+
+    //----------------------------------------------------------------
+
+    let rector = $('#selectionRect');
+    //拖选起点
+    let startX = 0;
+    let startY = 0;
+
+    //选择框核心代码
+    function resizeToPoint(x, y) {
+        let width = Math.abs(x - startX);
+        let height = Math.abs(y - startY);
+        rector.width(width);
+        rector.height(height);
+        //当鼠标x方向上为向左拖动 设置left位置
+        if (x < startX) {
+            rector.css({
+                left: (startX - width) + 'px',
+            });
+        }
+        //当鼠标y方向上为向上拖动 设置top位置
+        if (y < startY) {
+            rector.css({
+                top: (startY - height) + 'px',
+            });
+        }
+    }
+
+    /**
+     *核心相交算法
+     * @param rect1{x1,y1,x2,y2}
+     * @param rect2 {x1,y1,x2,y2}
+     */
+    function isCross(rect1, rect2) {
+        let xNotCross = true;//x方向上不重合
+        let yNotCross = true;//y方向上不重合
+        xNotCross = ((rect1.x1 > rect2.x2) || (rect2.x1 > rect1.x2));
+        yNotCross = ((rect1.y1 > rect2.y2) || (rect2.y1 > rect1.y2));
+        return !(xNotCross || yNotCross);
+    }
+
+    /**
+     *获取元素的矩形的起始点坐标与其对角点坐标
+     * @param $el
+     * @return {x1,y1,x2,y2}
+     */
+    function getRect($el) {
+        let x1 = $el.offset().left;
+        let y1 = $el.offset().top;
+        let x2 = x1 + $el.outerWidth();
+        let y2 = y1 + $el.outerHeight();
+        return {x1, x2, y1, y2};
+    }
+
+    //框选处理 如果元素与选择框相交则设置样式
+    function handleRectSelection() {
+        let selectionReact = getRect(rector);
+        $('.seatCharts-seat').each(function () {
+                let rect = getRect($(this));
+                if (isCross(selectionReact, rect)) {
+                    if ($(this).hasClass(elseSeatStatus)) {
+                        $(this).removeClass(elseSeatStatus);
+                    }
+                    if (!$(this).hasClass(curSeatStatus)) {
+                        $(this).addClass(curSeatStatus);
+                    }
+                }
+            }
+        );
+    }
+
+    $(window).on({
+        mousemove: function (e) {
+            if (settingSeats === false) return true;
+            if (e.which === 1) {
+                rector.show();
+                resizeToPoint(e.pageX, e.pageY);
+                handleRectSelection();
+            }
+        },
+        mouseup: function () {
+            if (settingSeats === false) return true;
+            rector.hide();
+        },
+        mousedown: function (e) {
+            if (settingSeats === false) return true;
+            startX = e.pageX;
+            startY = e.pageY;
+            rector.css({
+                top: startY + 'px',
+                left: startX + 'px'
+            });
+            let seatMap = $('#seat-map');
+            let mapX1 = seatMap.offset().left;
+            let mapY1 = seatMap.offset().top;
+            if (mapX1 < startX && startX < (mapX1 + seatMap.outerWidth()) && mapY1 < startY && startY < (mapY1 + seatMap.outerHeight())) {
+                return false;
+            } else {
+                return true;
+            }
+        }
+    });
+
+
+</script>
+
+</body>
+</html>

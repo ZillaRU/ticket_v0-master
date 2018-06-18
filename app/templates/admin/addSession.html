@@ -1,0 +1,68 @@
+{%extends 'admin/base.html'%}
+<!--网页head-->
+{%block title%}新增场次{%endblock%}
+
+{% block style %}
+    {{ super() }}
+{% endblock %}
+
+{%block scriptFront%}
+    {{ super() }}
+{% endblock %}
+<!--//-->
+
+<!--网页正文-->
+
+{% block navbar %}
+    {{ super() }}
+{% endblock %}
+
+{% block slidebar %}
+    {{ super() }}
+{% endblock %}
+
+{% block contentTitle %}演出管理{% endblock %}
+
+{%block content%}
+    <h4 class="text-center">新增一个场次</h4>
+    <form method="post" enctype="multipart/form-data">
+        {{ form.csrf_token }}
+        {{ form.show_id.label }}
+        {{ form.show_id(readonly=true)}} <br><br>
+        {% for msg in form.start_time.errors %}
+            <span style="color: red;">{{ msg }}</span>
+        {% endfor %}
+
+        {{ form.start_time.label }}
+        {{ form.start_time }} <br>
+        {% for msg in form.start_time.errors %}
+            <span style="color: red;">{{ msg }}</span>
+        {% endfor %}
+
+        {{ form.sale_time.label }}
+        {{ form.sale_time }} <br>
+        {% for msg in form.sale_time.errors %}
+            <span style="color: red;">{{ msg }}</span>
+        {% endfor %}
+
+        {{ form.end_sale_time.label }}
+        {{ form.end_sale_time }} <br>
+        {% for msg in form.end_sale_time.errors %}
+            <span style="color: red;">{{ msg }}</span>
+        {% endfor %}
+
+        {{ form.limit.label }}
+        {{ form.limit }} <br>
+        {% for msg in form.limit.errors %}
+            <span style="color: red;">{{ msg }}</span>
+        {% endfor %}
+        <br>
+
+        <div class="flex-right">
+        {{ form.submit }}
+        </div>
+    </form>
+{% endblock %}
+{% block scriptEnd %}
+    {{ super() }}
+{% endblock scriptEnd %}

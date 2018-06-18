@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>场次管理</title>
+    <link rel="stylesheet" href="../../../static/css/bootstrap.min.css">
+    <script src="../../../static/js/jquery-3.3.1.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.bootcss.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css">
+    <script src="../../../static/js/bootstrap.min.js"></script>
+</head>
+<script>
+    function Values(showID,sessionID,stime,sale_time,ed_sale_time,limit) {
+        {#alert('hhhhh');#}
+        $("#show_id").val(showID);
+        $("#session_id").val(sessionID);
+        $("#start_time").val(stime);
+        $("#sale_time").val(sale_time);
+        $("#end_sale_time").val(ed_sale_time);
+        $("#limit").val(limit);
+    }
+    $(function(){
+        $.ajax(
+            {
+                url:'{{url_for('admin.get_sessions',show_id=show_id)}}',
+                type:'get',
+                dataType:'json',
+                success:function (res) {
+                    if(res['ret']==='FAILURE'){
+                        alert('请求失败！');
+                        return;
+                    }
+                    if(res['data']['session_status']==='no session') {
+                        $('h1').append('<b> 无场次 </b>')
+                    }
+                    sessData=res['data']['session_list'];
+                    let session_table=$('#session_table');
+                    $.each(sessData, function (i, item) {
+                        tr='<td>'+item[0]+'</td>'+'<td>'+item[1]+'</td>'+'<td>'+item[2]+ '</td>'+
+                            '<td>'+item[3]+'</td>'+'<td>'+item[4]+'</td>'+'<td>'+item[5]+'</td>'+
+                            "<td><button class=\"btn btn-primary btn-lg\" data-toggle=\"modal\" data-target=\"#editModel\" onclick='Values(&#39;"
+                            +item[1]+"&#39;,&#39;"+item[0]+"&#39;,&#39;"+item[2]+"&#39;,&#39;"+item[3]+"&#39;,&#39;"+item[4]+"&#39;,&#39;"+item[5]+"&#39;)\'>编辑</button></td>";
+                        session_table.append('<tr>'+tr+'</tr>');
+                    });
+                }
+            }
+        )
+    }
+    );
+
+</script>
+<body>
+<h1>演出{{ show_id }}场次管理</h1>
+<p><a href="{{ url_for('admin.add_session',show_id=show_id) }}">新增场次</a></p>
+
+<table class="table table-bordered" id='session_table'>
+    <tr>
+        <th>场次id</th>
+        <th>演出id</th>
+        <th>开始时间</th>
+        <th>起售时间</th>
+        <th>停售时间</th>
+        <th>单笔限购</th>
+        <th></th>
+    </tr>
+ </table>
+
+<!-- 模态框（Modal） -->
+<div class="modal fade" id="editModel" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog" style="-webkit-transform: none; transform: none;">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+					&times;
+				</button>
+				<h4 class="modal-title" id="myModalLabel">
+					编辑场次
+				</h4>
+			</div>
+			<div class="modal-body">
+                <form method="post" enctype="multipart/form-data">
+        {{ form.csrf_token }}
+        {{ form.show_id.label }}<br>
+        {{ form.show_id (readonly=true) }}<br>
+        {{ form.session_id.label }}<br>
+        {{ form.session_id (readonly=true) }}<br>
+        {{ form.start_time.label }}
+        {{ form.start_time }} <br>
+        {% for msg in form.start_time.errors %}
+            <span style="color: red;">{{ msg }}</span>
+        {% endfor %}
+
+        {{ form.sale_time.label }}
+        {{ form.sale_time }} <br>
+        {% for msg in form.sale_time.errors %}
+            <span style="color: red;">{{ msg }}</span>
+        {% endfor %}
+
+        {{ form.end_sale_time.label }}
+        {{ form.end_sale_time }} <br>
+        {% for msg in form.end_sale_time.errors %}
+            <span style="color: red;">{{ msg }}</span>
+        {% endfor %}
+
+        {{ form.limit.label }}
+        {{ form.limit }} <br>
+        {% for msg in form.limit.errors %}
+            <span style="color: red;">{{ msg }}</span>
+        {% endfor %}
+
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">关闭
+				</button>
+				<button type="submit" class="btn btn-primary">
+					提交更改
+				</button>
+			</div>
+                </form>
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal -->
+</div>
+</body>
+</html>

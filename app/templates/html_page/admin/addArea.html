@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>场馆区域设置</title>
+    <link rel="stylesheet" type="text/css" href="../../../static/css/imgareaselect-animated.css" />
+    <script type="text/javascript" src="../../../static/js/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="../../../static/js/jquery.imgareaselect.pack.js"></script>
+</head>
+<body>
+{# todo imgareaselector 搞进来#}
+<img id="photo" src="{{url_for('static',filename='areaImgs/area.png')}}">
+<form method="post" enctype="multipart/form-data">
+        {{ form.csrf_token }}
+        <!--获取到文本的标签-->
+        {{ form.stadium_id.label }}
+        {{ form.stadium_id(readonly=true) }} <br>
+        {% for error in form.stadium_id.errors %}
+            <span style="color: red;">{{ error }}</span>
+        {% endfor %}
+
+        {{ form.area_name.label }}
+        {{ form.area_name }} <br>
+        {% for error in form.area_name.errors %}
+            <span style="color: red;">{{ error }}</span>
+        {% endfor %}
+
+        {{ form.x1.label }}
+        {{ form.x1 }} <br>
+        {% for error in form.x1.errors %}
+            <span style="color: red;">{{ error }}</span>
+        {% endfor %}
+
+        {{ form.y1.label }}
+        {{ form.y1 }} <br>
+        {% for error in form.y1.errors %}
+            <span style="color: red;">{{ error }}</span>
+        {% endfor %}
+        {{ form.x2.label }}
+        {{ form.x2 }} <br>
+        {% for error in form.x2.errors %}
+            <span style="color: red;">{{ error }}</span>
+        {% endfor %}
+        {{ form.y2.label }}
+        {{ form.y2 }} <br>
+        {% for error in form.y2.errors %}
+            <span style="color: red;">{{ error }}</span>
+        {% endfor %}
+        {{ form.row_count.label }}
+        {{ form.row_count }} <br>
+        {% for error in form.row_count.errors %}
+            <span style="color: red;">{{ error }}</span>
+        {% endfor %}
+        {{ form.col_count.label }}
+        {{ form.col_count }} <br>
+        {% for error in form.col_count.errors %}
+            <span style="color: red;">{{ error }}</span>
+        {% endfor %}
+        {{ form.submit }}
+    </form>
+<script type="text/javascript">
+$(document).ready(function () {
+    $('img#photo').imgAreaSelect({
+        handles: true,
+        onSelectEnd: function (img, selection) {
+            $("#x1").val(selection.x1);
+            $("#y1").val(selection.y1);
+            $("#x2").val(selection.x2);
+            $("#y2").val(selection.y2);
+        }
+    });
+});
+</script>
+
+</body>
+</html>

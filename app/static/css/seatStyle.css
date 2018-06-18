@@ -1,0 +1,74 @@
+div.seatCharts-container {
+    /*border-right: 1px dotted #adadad;*/
+    width: 800px;
+    padding: 20px;
+    /*float: left;*/
+    /*overflow-y: auto;*/
+    overflow-x: scroll;
+    /*overflow: scroll;*/
+}
+
+div.seatCharts-cell {
+    color: #182C4E;
+    height: 18px;
+    width: 18px;
+    line-height: 18px;
+    margin: 3px;
+    float: left;
+    text-align: center;
+    outline: none;
+    font-size: 0;
+    /*display: inline;*/
+}
+
+div.seatCharts-seat {
+    color: #fff;
+    cursor: pointer;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    font-size: 0;
+}
+
+div.seatCharts-row {
+    height: 26px;
+    width: 20000px;
+}
+
+div.col-header {
+    font-size: 13px;
+}
+
+div.row-header {
+    font-size: 13px;
+}
+
+div.seatCharts-seat.available {
+    background-color: #B9DEA0;
+}
+
+div.seatCharts-seat.focused {
+    background-color: #76B474;
+    border: none;
+}
+
+div.seatCharts-seat.selected {
+    background-color: red;
+}
+
+div.seatCharts-seat.unavailable {
+    background-color: #472B34;
+    cursor: not-allowed;
+}
+
+.seatCharts-cell input.cell-input {
+    width: 15px;
+}
+
+/*.color-block {*/
+    /*height: 30px;*/
+    /*width: 50px;*/
+    /*font-size: 25px;*/
+    /*float: left;*/
+    /*display: inline;*/
+/*}*/

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>新增场次</title>
+</head>
+<body>
+<form method="post" enctype="multipart/form-data">
+        {{ form.csrf_token }}
+        {{ form.show_id.label }}
+        {{ form.show_id(readonly=true)}} <br>
+        {% for msg in form.start_time.errors %}
+            <span style="color: red;">{{ msg }}</span>
+        {% endfor %}
+
+        {{ form.start_time.label }}
+        {{ form.start_time }} <br>
+        {% for msg in form.start_time.errors %}
+            <span style="color: red;">{{ msg }}</span>
+        {% endfor %}
+
+        {{ form.sale_time.label }}
+        {{ form.sale_time }} <br>
+        {% for msg in form.sale_time.errors %}
+            <span style="color: red;">{{ msg }}</span>
+        {% endfor %}
+
+        {{ form.end_sale_time.label }}
+        {{ form.end_sale_time }} <br>
+        {% for msg in form.end_sale_time.errors %}
+            <span style="color: red;">{{ msg }}</span>
+        {% endfor %}
+
+        {{ form.limit.label }}
+        {{ form.limit }} <br>
+        {% for msg in form.limit.errors %}
+            <span style="color: red;">{{ msg }}</span>
+        {% endfor %}
+
+        {{ form.submit }}
+    </form>
+</body>
+</html>

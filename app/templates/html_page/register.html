@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>register</title>
+</head>
+<body>
+
+<h1>注册</h1>
+<form method="post" enctype="multipart/form-data">
+    {{ form.hidden_tag() }}
+    {{ form.username.label }}
+    {{ form.username}}
+        {% for error in form.username.errors %}
+            <span style="color: red;">{{ error }}</span>
+        {% endfor %}
+    {{ form.password.label }}
+    {{ form.password}}
+        {% for error in form.password.errors %}
+            <span style="color: red;">{{ error }}</span>
+        {% endfor %}
+    {{ form.password2.label }}
+    {{ form.password2}}
+        {% for error in form.password2.errors %}
+            <span style="color: red;">{{ error }}</span>
+        {% endfor %}
+    {{ form.tel.label }}
+    {{ form.tel}}
+        {% for error in form.tel.errors %}
+            <span style="color: red;">{{ error }}</span>
+        {% endfor %}
+    {{ form.idCard.label }}
+    {{ form.idCard}}
+        {% for error in form.idCard.errors %}
+            <span style="color: red;">{{ error }}</span>
+        {% endfor %}
+    {{ form.submit}}
+</form>
+<div class="container">
+    {% for message in get_flashed_messages() %}
+    <div class="alert alert-warning">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        {{ message }}
+    </div>
+    {% endfor %}
+    {% block page_content %}{% endblock %}
+</div>
+</body>
+</html>
